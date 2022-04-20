@@ -22,6 +22,11 @@ type logRecord struct {
 	TimePoint `bson:"time_point"`
 
 }
+
+type FindByJonName struct {
+	JobName string  `bson:"job_name"`//任务名称
+
+}
 //链接服务器上的mogodb 以及实现CRUD
 func main() {
 
@@ -32,58 +37,37 @@ func main() {
 		fmt.Println(err)
 	}
 
+
 	data := client.Database("cron")
 
 	colletion := data.Collection("log")
-	fmt.Println(colletion)
 
-	//record1 := &logRecord{
-	//	JobName: "job02",
-	//	Command: "echo hello",
-	//	Err: "",
-	//	Context: "hello",
-	//	TimePoint:TimePoint{
-	//		StartTime: time.Now().Unix(),
-	//		EndTime: time.Now().Unix()+10,
-	//	},
-	//}
-	//record2 := &logRecord{
-	//	JobName: "job023",
-	//	Command: "echo hello",
-	//	Err: "",
-	//	Context: "hello",
-	//	TimePoint:TimePoint{
-	//		StartTime: time.Now().Unix(),
-	//		EndTime: time.Now().Unix()+10,
-	//	},
-	//}
-	record3 := &logRecord{
-		JobName: "job04",
-		Command: "echo golang",
-		Err: "",
-		Context: "golang",
-		TimePoint:TimePoint{
-			StartTime: time.Now().Unix(),
-			EndTime: time.Now().Unix()+10,
-		},
-	}
-
-	log := []interface{}{record3}
+	cond := &FindByJonName{JobName: "job04"}
 
 
-	res,err := colletion.InsertMany(context.TODO(),log)
-    if err != nil {
+	//设置边界
+	opts := options.Find().SetSkip(0)
+	opts.SetLimit(2)
+
+
+
+	cur,err := colletion.Find(context.TODO(),cond,opts)
+	if err != nil {
 		fmt.Println(err)
-		return
 	}
-	fmt.Println(res.InsertedIDs)
+	defer cur.Close(context.TODO())
+	for cur.Next(context.TODO()) {
+		record := &logRecord{}
+		err := cur.Decode(record)
+		if err != nil {
+			fmt.Println(err)
+		}
+		fmt.Println(*record)
+
+	}
 
 
 
 
-
-
-	//3 选择表
 }
-
 
