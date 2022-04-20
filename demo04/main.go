@@ -39,12 +39,4 @@ func main() {
 		fmt.Println(err)
 	}
 	fmt.Println(getRes.Kvs)
-
-
-
-
-
-
-
-
 }
