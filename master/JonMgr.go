@@ -61,3 +61,41 @@ func (jobMgr *JobMgr) SaveJob(job *common.Job)(oldJob *common.Job,err error) {
     return
 
 }
+
+func (jobMgr *JobMgr) Delete(name string) (oldJob *common.Job,err error) {
+	jobKey := "/cron/jobs/" + name
+
+	deleteRes,err := jobMgr.client.Delete(context.TODO(),jobKey,clientv3.WithPrevKV())
+	if err != nil {
+		fmt.Println("Delete failed err:",err)
+		return nil,err
+	}
+
+	if deleteRes.PrevKvs != nil {
+		json.Unmarshal(deleteRes.PrevKvs[0].Value,&oldJob)
+		err = nil
+		return
+	}
+	return
+
+}
+
+
+//列举所以的任务
+func (jobMgr *JobMgr) ListJobs() (jobList []*common.Job,err error) {
+	jobKey := "/cron/jobs/"
+
+	getRes,err := jobMgr.client.Get(context.TODO(),jobKey,clientv3.WithPrefix())
+	if err != nil {
+		return nil,err
+	}
+	jobList = make([]*common.Job,0)
+	for _,v := range getRes.Kvs {
+		job := common.Job{}
+		json.Unmarshal(v.Value,&job)
+		jobList = append(jobList,&job)
+	}
+	err = nil
+	return
+
+}

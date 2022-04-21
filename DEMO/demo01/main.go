@@ -12,8 +12,7 @@ func main() {
 	//var err error
 	//
 	////cmd命令
-	//cmd := exec.Command("/bin/bash","-c","sleep 8;go run /Users/raoraoningkang/Desktop/MyProject/RCrontab/text/main.go")
-	//
+
 	////子进程运行cmd，读取出子进程的数据
 	//if outPut,err = cmd.CombinedOutput() ; err != nil {
 	//	fmt.Println(err)

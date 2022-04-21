@@ -27,7 +27,7 @@ func main() {
 
 	ctx, cancel := context.WithTimeout(context.Background(), 10*time.Second)
 	defer cancel()
-	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://47.96.162.129:27017"))
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI("mongodb://"))
 	if err != nil {
 		fmt.Println(err)
 	}

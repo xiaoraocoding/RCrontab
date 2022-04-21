@@ -17,7 +17,7 @@ func main() {
 
 	//etcd的客户端链接配置
 	config = clientv3.Config{
-		Endpoints:   []string{"47.96.162.129:2379"},
+		Endpoints:   []string{},
 		DialTimeout: 5 * time.Second,
 	}
 
