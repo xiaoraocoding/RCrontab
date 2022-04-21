@@ -9,6 +9,7 @@ import (
 
 
 func InitRouter(r *gin.Engine)  {
+	r.GET("/index",HandleIndex)
 	r.POST("/job/save",HanleJobSave)
 	r.POST("/job/delete",HandleDeleteJob)
 	r.GET("/job/list",HandleList)
@@ -60,7 +61,7 @@ func HandleList(c *gin.Context) {
 	c.JSON(200,gin.H{
 		"error": 0,
 		"msg" : "success",
-		"oldJob":list,
+		"list":list,
 	})
 
 
@@ -68,6 +69,21 @@ func HandleList(c *gin.Context) {
 
 
 func HandleKill(c *gin.Context) {
+	name := c.PostForm("name")
+	err := G_JobMgr.Kill(name)
+	if err != nil {
+		fmt.Println("kill filed,err:",err)
+	}
+	c.JSON(200,gin.H{
+		"error": 0,
+		"msg" : "success",
+	})
 
+
+
+}
+
+func HandleIndex(c *gin.Context) {
+	c.HTML(200,"index.html","")
 }
 

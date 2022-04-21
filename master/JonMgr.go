@@ -99,3 +99,20 @@ func (jobMgr *JobMgr) ListJobs() (jobList []*common.Job,err error) {
 	return
 
 }
+
+func (jobMgr *JobMgr) Kill(name string) (err error) {
+	killKey := "/cron/killer/" + name
+
+	leastRes,err := jobMgr.lease.Grant(context.TODO(),1)
+	if err != nil {
+		fmt.Println("lease grant failed,err:",err)
+		return err
+	}
+	leastId := leastRes.ID
+	_,err = jobMgr.kv.Put(context.TODO(),killKey,"",clientv3.WithLease(leastId))
+    if err != nil {
+     fmt.Println("put failed,err:",err)
+	 return  err
+	}
+	return nil
+}
