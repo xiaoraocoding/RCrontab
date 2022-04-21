@@ -8,6 +8,7 @@ import (
 
 type Config struct {
 	Port string `json:"port"`
+	Etcd string `json:"etcd"`
 }
 
 var Conf Config
