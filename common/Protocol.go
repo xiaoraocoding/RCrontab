@@ -22,6 +22,14 @@ type JobEvent struct {
 	Job *Job
 }
 
+type JobExecuteResult struct {
+	ExecuteInfo JobExecuteInfo //当前的执行状态
+	Output []byte              //命令的返回结果
+	Err error                  //错误
+	StartTime time.Time
+	EndTime time.Time
+}
+
 //任务执行计划
 type JobSchedulePlan struct {
 	Job *Job
