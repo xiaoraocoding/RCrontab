@@ -52,7 +52,7 @@ func (jobMgr *JobMgr) WatchJobs() (err error) {
 	for _,v := range getRes.Kvs {
 		if job,err = common.UnpackJob(v.Value);err ==nil {
 			jobEvent := common.BuildJobEvent(1,job)
-			fmt.Println(*jobEvent)
+			fmt.Println(jobEvent)
 
 		}
 
@@ -60,14 +60,16 @@ func (jobMgr *JobMgr) WatchJobs() (err error) {
 	//2 从这个端口监听 revision的变化
 	go func() {
 		watchStartRevison := getRes.Header.Revision + 1
-		watchChan := jobMgr.watch.Watch(context.TODO(),"/cron/jobs/",clientv3.WithRev(watchStartRevison),clientv3.WithPrevKV())
+		watchChan := jobMgr.watch.Watch(context.TODO(),"/cron/jobs/",clientv3.WithRev(watchStartRevison),clientv3.WithPrefix())
 		for watchRes := range watchChan {
 			for _,watchEvent := range watchRes.Events {
 				switch watchEvent.Type{
 				case mvccpb.PUT:
 					//出现了异常
-					if job,err = common.UnpackJob(watchEvent.Kv.Key);err != nil {
-						continue
+					job,err := common.UnpackJob(watchEvent.Kv.Value)
+					if err != nil {
+						fmt.Println("unpack failed",err)
+						return
 					}
 					//构建一个更新的Event
 					jobEvent := common.BuildJobEvent(1,job)
