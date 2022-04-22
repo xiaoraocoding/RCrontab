@@ -8,7 +8,8 @@ import (
 func main() {
 	worker.InitJobMgr()
 
-	worker.W_JobMgr.WatchJobs()
+
+	worker.InitSchedule()
 
 	for {
 		time.Sleep(1*time.Second)

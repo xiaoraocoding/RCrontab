@@ -37,7 +37,11 @@ func InitJobMgr() {
 		lease: lease,
 		watch: watch,
 	}
-	fmt.Println(W_JobMgr)
+	err = W_JobMgr.WatchJobs()
+	if err != nil {
+		fmt.Println("watch jobs failed,err:",err)
+	}
+
 }
 
 //监听任务的变化
