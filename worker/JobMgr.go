@@ -73,7 +73,7 @@ func (jobMgr *JobMgr) WatchJobs() (err error) {
 					}
 					//构建一个更新的Event
 					jobEvent := common.BuildJobEvent(1,job)
-					fmt.Println(*jobEvent)
+					W_Scheduler.PushJobEvent(jobEvent)
 
 					//任务保存
 				case mvccpb.DELETE:
@@ -82,11 +82,8 @@ func (jobMgr *JobMgr) WatchJobs() (err error) {
 					job = &common.Job{Name: jobName}
 					//构建一个删除的Event
 					jobEvent := common.BuildJobEvent(2,job)
-					fmt.Println(*jobEvent)
+					W_Scheduler.PushJobEvent(jobEvent)
 
-
-
-				
 				}
 
 			}

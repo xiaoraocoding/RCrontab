@@ -2,7 +2,10 @@ package common
 
 import (
 	"encoding/json"
+	"fmt"
+	"github.com/gorhill/cronexpr"
 	"strings"
+	"time"
 )
 
 
@@ -16,7 +19,14 @@ type Job struct {
 
 type JobEvent struct {
 	EventType int  //此处分两种，一种是delete，一种是put，也就是删除和修改
-	job *Job
+	Job *Job
+}
+
+//任务执行计划
+type JobSchedulePlan struct {
+	Job *Job
+	Expr *cronexpr.Expression
+	NextTime time.Time  //下一次的调度时间
 }
 
 func UnpackJob(value []byte)(res *Job,err error){
@@ -42,6 +52,23 @@ func BuildJobEvent(eventType int,job *Job) *JobEvent{
 		eventType,
 		job,
 	}
+}
+
+//构建任务计划
+func BuildJobSchedulePlan(job *Job)*JobSchedulePlan {
+	//解析cron表达式
+	expr,err := cronexpr.Parse(job.CronExpr)
+	if err != nil {
+		fmt.Println("parse failed",err)
+	}
+
+	jobSchedulePlan:= &JobSchedulePlan{
+		job,
+		expr,
+		expr.Next(time.Now()),
+
+	}
+	return jobSchedulePlan
 }
 
 
