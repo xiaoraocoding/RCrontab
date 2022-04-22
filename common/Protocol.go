@@ -14,7 +14,7 @@ import (
 type Job struct {
 	Name string `json:"name"`
 	Command string `json:"command"`   //任务的命令
-	CronExpr string `json:"cron_expr"`  //定时
+	CronExpr string `json:"cronExpr"`  //定时
 }
 
 type JobEvent struct {
@@ -38,7 +38,13 @@ func UnpackJob(value []byte)(res *Job,err error){
 	}
 	res = job
 	return
+}
 
+//任务执行的状态信息
+type JobExecuteInfo struct {
+	Job *Job
+	PlanTime time.Time  //理论上的调度时间
+	RealTime time.Time  //实际上的调度时间
 }
 
 func ExtrateJonName(jobKey string)(string) {
@@ -69,6 +75,16 @@ func BuildJobSchedulePlan(job *Job)*JobSchedulePlan {
 
 	}
 	return jobSchedulePlan
+}
+
+
+func BuildJobExecuteInfo(jobSheduleplan *JobSchedulePlan) *JobExecuteInfo {
+	return &JobExecuteInfo{
+		Job: jobSheduleplan.Job,
+		RealTime: time.Now(),
+		PlanTime: jobSheduleplan.NextTime,
+	}
+
 }
 
 
