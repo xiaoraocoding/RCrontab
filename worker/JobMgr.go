@@ -41,7 +41,7 @@ func InitJobMgr() {
 }
 
 //监听任务的变化
-func (jobMgr *JobMgr) watchJobs() (err error) {
+func (jobMgr *JobMgr) WatchJobs() (err error) {
 	var job *common.Job
 
 	//1 知道了此时目录下的所有的任务，得到当前节点的revision
@@ -52,6 +52,7 @@ func (jobMgr *JobMgr) watchJobs() (err error) {
 	for _,v := range getRes.Kvs {
 		if job,err = common.UnpackJob(v.Value);err ==nil {
 			jobEvent := common.BuildJobEvent(1,job)
+			fmt.Println(*jobEvent)
 
 		}
 
@@ -59,7 +60,7 @@ func (jobMgr *JobMgr) watchJobs() (err error) {
 	//2 从这个端口监听 revision的变化
 	go func() {
 		watchStartRevison := getRes.Header.Revision + 1
-		watchChan := jobMgr.watch.Watch(context.TODO(),"/cron/jobs/",clientv3.WithRev(watchStartRevison))
+		watchChan := jobMgr.watch.Watch(context.TODO(),"/cron/jobs/",clientv3.WithRev(watchStartRevison),clientv3.WithPrevKV())
 		for watchRes := range watchChan {
 			for _,watchEvent := range watchRes.Events {
 				switch watchEvent.Type{
@@ -70,6 +71,7 @@ func (jobMgr *JobMgr) watchJobs() (err error) {
 					}
 					//构建一个更新的Event
 					jobEvent := common.BuildJobEvent(1,job)
+					fmt.Println(*jobEvent)
 
 					//任务保存
 				case mvccpb.DELETE:
@@ -78,6 +80,7 @@ func (jobMgr *JobMgr) watchJobs() (err error) {
 					job = &common.Job{Name: jobName}
 					//构建一个删除的Event
 					jobEvent := common.BuildJobEvent(2,job)
+					fmt.Println(*jobEvent)
 
 
 
@@ -88,4 +91,5 @@ func (jobMgr *JobMgr) watchJobs() (err error) {
 		}
 
 	}()
+	return err
 }

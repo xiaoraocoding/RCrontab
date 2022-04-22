@@ -31,9 +31,9 @@ func HanleJobSave (c *gin.Context) {
 		fmt.Println("save etcd failed,err:",err)
 	}
 	c.JSON(200,gin.H{
-		"error": 0,
+		"errno": 0,
 		"msg" : "success",
-		"oldJob":oldJob,
+		"data":oldJob,
 	})
 }
 
@@ -45,9 +45,9 @@ func HandleDeleteJob(c *gin.Context) {
 		fmt.Println("delete failed,err:",err)
 	}
 	c.JSON(200,gin.H{
-		"error": 0,
+		"errno": 0,
 		"msg" : "success",
-		"oldJob":oldJob,
+		"data":oldJob,
 	})
 
 
@@ -59,9 +59,9 @@ func HandleList(c *gin.Context) {
 		fmt.Println("list failed err:",err)
 	}
 	c.JSON(200,gin.H{
-		"error": 0,
+		"errno": 0,
 		"msg" : "success",
-		"list":list,
+		"data":list,
 	})
 
 
@@ -75,8 +75,9 @@ func HandleKill(c *gin.Context) {
 		fmt.Println("kill filed,err:",err)
 	}
 	c.JSON(200,gin.H{
-		"error": 0,
+		"errno": 0,
 		"msg" : "success",
+		"data":nil,
 	})
 
 
