@@ -97,3 +97,9 @@ func (jobMgr *JobMgr) WatchJobs() (err error) {
 	}()
 	return err
 }
+
+func (jobMgr *JobMgr) CreateLock(jobName string)*JobLock {
+	joblok := InitJobLock(jobName,jobMgr.kv,jobMgr.lease)
+	return joblok
+
+}
