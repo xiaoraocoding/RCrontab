@@ -3,6 +3,7 @@ package worker
 import (
 	"RCrontab/common"
 	"fmt"
+	"math/rand"
 	"os/exec"
 	"time"
 )
@@ -16,6 +17,8 @@ var W_Executor *Executor
 
 func (executor *Executor) ExecuteJob(job *common.JobExecuteInfo) {
 	go func() {
+		//上锁之前进行随机的睡眠
+		time.Sleep(time.Duration(rand.Intn(1000))*time.Millisecond)
 		joblock := W_JobMgr.CreateLock(job.Job.Name)  //创建一个锁
       var result *common.JobExecuteResult
 		 err := joblock.TryLock()
@@ -23,6 +26,7 @@ func (executor *Executor) ExecuteJob(job *common.JobExecuteInfo) {
 		 if err != nil {
 			 start := time.Now()
 			fmt.Println("这里的上锁失败了",err)
+
 			result = &common.JobExecuteResult{
 				ExecuteInfo: job,
 				Err: err,

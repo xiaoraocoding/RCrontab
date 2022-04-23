@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"github.com/gin-gonic/gin"
+	"strconv"
 )
 
 
@@ -14,6 +15,7 @@ func InitRouter(r *gin.Engine)  {
 	r.POST("/job/delete",HandleDeleteJob)
 	r.GET("/job/list",HandleList)
 	r.POST("/job/kill",HandleKill)
+	r.GET("/job/log",HandleLog)
 
 }
 
@@ -88,3 +90,29 @@ func HandleIndex(c *gin.Context) {
 	c.HTML(200,"index.html","")
 }
 
+
+func HandleLog(c *gin.Context) {
+	// 这里传来的数据是 /job/log?name=jon01&skip=0&limit=10
+	name := c.Query("name")
+	skip := c.Query("skip")
+	limit := c.Query("limit")
+
+	sk,_ := strconv.Atoi(skip)
+	lim,_ := strconv.Atoi(limit)
+	var logArr []common.JobLog
+	var err error
+
+	if logArr,err = G_logMgr.ListLog(name,sk,lim); err != nil {
+		fmt.Println("listLog failed err:",err)
+		return
+	}
+	fmt.Println(logArr)
+
+
+	c.JSON(200,gin.H{
+		"errno": 0,
+		"msg" : "success",
+		"data":&logArr,
+	})
+
+}

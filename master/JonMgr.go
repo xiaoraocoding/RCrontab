@@ -102,13 +102,6 @@ func (jobMgr *JobMgr) ListJobs() (jobList []*common.Job,err error) {
 
 func (jobMgr *JobMgr) Kill(name string) (err error) {
 	killKey := "/cron/killer/" + name
-	fmt.Println(killKey)
-	fmt.Println(killKey)
-	fmt.Println(killKey)
-	fmt.Println(killKey)
-	fmt.Println(killKey)
-	fmt.Println(killKey)
-
 	leastRes,err := jobMgr.lease.Grant(context.TODO(),1)
 	if err != nil {
 		fmt.Println("lease grant failed,err:",err)

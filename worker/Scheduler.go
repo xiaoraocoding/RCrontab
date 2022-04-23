@@ -22,8 +22,7 @@ func (schedule *Scheduler) handleJobEvent(jobEvent *common.JobEvent) {
 	schedule.jobPlanTable[jobEvent.Job.Name] = jobPlantable
 
 	case 2: //删除
-	_,ok := schedule.jobPlanTable[jobEvent.Job.Name]
-	if ok {
+	if _,ok := schedule.jobPlanTable[jobEvent.Job.Name];ok{
 		delete(schedule.jobPlanTable,jobEvent.Job.Name)
 	}
 
@@ -47,10 +46,6 @@ func (schedule *Scheduler) scheduleLoop() {
 			case <- timerA.C :
 		case jobRes:= <- schedule.jobResultChan : //监听任务的结果
 		   schedule.handleJobResult(jobRes)
-
-			
-
-
 		}
 		after = schedule.TrySchedule()
 		timerA.Reset(after)
@@ -128,9 +123,27 @@ func (schedule *Scheduler) PushJobResult (jobRes *common.JobExecuteResult) {
 }
 
 
-func (schedule *Scheduler) handleJobResult (jobRes *common.JobExecuteResult) {
-	delete(schedule.jobExecutingTable,jobRes.ExecuteInfo.Job.Name)
-	fmt.Println("任务执行完成",jobRes.ExecuteInfo.Job.Name,jobRes.Err,jobRes.Output)
+func (schedule *Scheduler) handleJobResult (result *common.JobExecuteResult) {
+	delete(schedule.jobExecutingTable,result.ExecuteInfo.Job.Name)
+
+	fmt.Println("任务执行完成",result.ExecuteInfo.Job.Name,result.Err,result.Output)
+	if result.Err != common.ERR_LOCK_ALREADY_REQUIRED {
+		jobLog := &common.JobLog{
+			JobName: result.ExecuteInfo.Job.Name,
+			Command: result.ExecuteInfo.Job.Command,
+			OutPut: string(result.Output),
+			PlanTime: result.ExecuteInfo.PlanTime.UnixNano() / 1000 / 1000,
+			ScheduleTime: result.ExecuteInfo.RealTime.UnixNano() / 1000 / 1000,
+			StartTime: result.StartTime.UnixNano() / 1000 / 1000,
+			EndTime: result.EndTime.UnixNano() / 1000 / 1000,
+		}
+		if result.Err != nil {
+			jobLog.Err = result.Err.Error()
+		} else {
+			jobLog.Err = ""
+		}
+		W_logSink.Append(jobLog)
+	}
 }
 
 

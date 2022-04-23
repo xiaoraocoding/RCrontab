@@ -109,7 +109,6 @@ func (jobMgr *JobMgr) CreateLock(jobName string)*JobLock {
 func (jobMgr *JobMgr) watchKill() {
 
 	go func() {
-
 		watchChan := jobMgr.watch.Watch(context.TODO(),"/cron/killer/",clientv3.WithPrefix())
 		for watchRes := range watchChan {
 			for _,watchEvent := range watchRes.Events {

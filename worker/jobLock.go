@@ -1,6 +1,7 @@
 package worker
 
 import (
+	"RCrontab/common"
 	"context"
 	"fmt"
 	"github.com/coreos/etcd/clientv3"
@@ -86,7 +87,7 @@ func (joblock *JobLock)TryLock() error {
 		fmt.Println("锁被占用")
 		cancelFunc()
 		joblock.Lease.Revoke(canctx,leaseId)
-		return err
+		 err = common.ERR_LOCK_ALREADY_REQUIRED
 	}
 
 	//此时抢锁已经成功

@@ -16,6 +16,7 @@ func main() {
 	master.InitJobMgr()
     //初始化路由
 	master.InitRouter(r)
+	master.InitLogMgr()
 	r.Run(":"+master.Conf.Port)
 
 
