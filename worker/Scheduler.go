@@ -10,6 +10,7 @@ type Scheduler struct {
 	jobEventChan chan *common.JobEvent //etcd的任务队列
 	jobPlanTable  map[string]*common.JobSchedulePlan
 	jobExecutingTable map[string]*common.JobExecuteInfo
+	jobResultChan chan *common.JobExecuteResult //任务结果队列
 }
 
 var W_Scheduler *Scheduler
@@ -37,6 +38,9 @@ func (schedule *Scheduler) scheduleLoop() {
 		case jobEvent := <- schedule.jobEventChan:
 			schedule.handleJobEvent(jobEvent)
 			case <- timerA.C :
+		case jobRes:= <- schedule.jobResultChan : //监听任务的结果
+		   schedule.handleJobResult(jobRes)
+
 
 		}
 		after = schedule.TrySchedule()
@@ -52,6 +56,7 @@ func InitSchedule() {
 		jobEventChan: make(chan *common.JobEvent,1000),
 		jobPlanTable: make(map[string]*common.JobSchedulePlan),
 		jobExecutingTable: make(map[string]*common.JobExecuteInfo),
+		jobResultChan: make(chan *common.JobExecuteResult,1000),
 	}
 	go W_Scheduler.scheduleLoop()
 
@@ -104,6 +109,17 @@ func (schedule *Scheduler) TryStartJob (jobPlan *common.JobSchedulePlan) {
 
 
 
+}
+
+
+func (schedule *Scheduler) PushJobResult (jobRes *common.JobExecuteResult) {
+	schedule.jobResultChan <- jobRes
+}
+
+
+func (schedule *Scheduler) handleJobResult (jobRes *common.JobExecuteResult) {
+	delete(schedule.jobPlanTable,jobRes.ExecuteInfo.Job.Name)
+	fmt.Println("任务执行完成",jobRes.ExecuteInfo.Job.Name,jobRes.Err,jobRes.Output)
 }
 
 

@@ -6,10 +6,11 @@ import (
 )
 
 func main() {
+	worker.InitSchedule()
 	worker.InitJobMgr()
 
 
-	worker.InitSchedule()
+
 
 	for {
 		time.Sleep(1*time.Second)

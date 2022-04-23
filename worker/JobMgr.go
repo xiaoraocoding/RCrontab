@@ -56,7 +56,8 @@ func (jobMgr *JobMgr) WatchJobs() (err error) {
 	for _,v := range getRes.Kvs {
 		if job,err = common.UnpackJob(v.Value);err ==nil {
 			jobEvent := common.BuildJobEvent(1,job)
-			fmt.Println(jobEvent)
+			//这里是为了同步给调度协程
+			W_Scheduler.PushJobEvent(jobEvent)
 
 		}
 
