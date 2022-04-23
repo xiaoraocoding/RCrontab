@@ -41,6 +41,7 @@ func InitJobMgr() {
 	if err != nil {
 		fmt.Println("watch jobs failed,err:",err)
 	}
+	W_JobMgr.watchKill()
 
 }
 
@@ -101,5 +102,34 @@ func (jobMgr *JobMgr) WatchJobs() (err error) {
 func (jobMgr *JobMgr) CreateLock(jobName string)*JobLock {
 	joblok := InitJobLock(jobName,jobMgr.kv,jobMgr.lease)
 	return joblok
+
+}
+
+//监听任务的强杀
+func (jobMgr *JobMgr) watchKill() {
+
+	go func() {
+
+		watchChan := jobMgr.watch.Watch(context.TODO(),"/cron/killer/",clientv3.WithPrefix())
+		for watchRes := range watchChan {
+			for _,watchEvent := range watchRes.Events {
+				switch watchEvent.Type{
+				case mvccpb.PUT:
+					jobName := common.ExtrateJobKill(string(watchEvent.Kv.Key))
+					job := &common.Job{Name: jobName}
+					jobEvent := common.BuildJobEvent(3,job)
+					W_Scheduler.PushJobEvent(jobEvent)
+
+					//任务保存
+				case mvccpb.DELETE:
+
+
+
+				}
+
+			}
+		}
+
+	}()
 
 }

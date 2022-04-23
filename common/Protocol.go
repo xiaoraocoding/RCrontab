@@ -55,9 +55,13 @@ type JobExecuteInfo struct {
 	RealTime time.Time  //实际上的调度时间
 }
 
-func ExtrateJonName(jobKey string)(string) {
+func ExtrateJonName(jobKey string) string {
 
 	return strings.TrimPrefix(jobKey,"/cron/jobs/")
+}
+
+func ExtrateJobKill(jobKey string) string {
+	return strings.TrimPrefix(jobKey,"/cron/killer/")
 }
 
 //构建事件的变化
