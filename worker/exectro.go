@@ -18,22 +18,40 @@ var W_Executor *Executor
 func (executor *Executor) ExecuteJob(job *common.JobExecuteInfo) {
 	go func() {
 		joblock := W_JobMgr.CreateLock(job.Job.Name)  //创建一个锁
-		start := time.Now()
-		cmd := exec.CommandContext(context.TODO(),"/bin/bash","-c",job.Job.Command)
-		output,err := cmd.CombinedOutput()
-		if err  != nil {
-			fmt.Println("server run command failed",err)
-			return
-		}
-		end := time.Now()
+      var result *common.JobExecuteResult
+		 err := joblock.TryLock()
+		 defer joblock.Unlock()
+		 if err != nil {
+			 start := time.Now()
+			fmt.Println("这里的上锁失败了",err)
+			result = &common.JobExecuteResult{
+				ExecuteInfo: *job,
+				Err: err,
+				StartTime: start,
+			}
+		}else {
+			start := time.Now()
+			cmd := exec.CommandContext(context.TODO(),"/bin/bash","-c",job.Job.Command)
+			output,err := cmd.CombinedOutput()
+			if err  != nil {
+				fmt.Println("server run command failed",err)
+				return
+			}
+			end := time.Now()
 
-		result := &common.JobExecuteResult{
-			ExecuteInfo: *job,
-			Output: output,
-			Err: err,
-			StartTime: start,
-			EndTime: end,
+			result = &common.JobExecuteResult{
+				ExecuteInfo: *job,
+				Output: output,
+				Err: err,
+				StartTime: start,
+				EndTime: end,
+			}
+
+
 		}
 		W_Scheduler.PushJobResult(result)
-	}()
+		}()
+
+
+
 }

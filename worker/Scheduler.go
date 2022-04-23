@@ -79,8 +79,9 @@ func (shedule *Scheduler) TrySchedule()time.Duration {
 		//这里需要注意的就是 这里有可能执行有可能不执行，原因是因为可能你的任务的执行时间长，那么
 		//到了这次的执行时间，你还是没有执行完，那就不执行来
 		if jobPlan.NextTime.Before(now) || jobPlan.NextTime.Equal(now) {
-			jobPlan.NextTime = jobPlan.Expr.Next(now)  //下一次更新的时间
+			  //下一次更新的时间
 			shedule.TryStartJob(jobPlan)
+			jobPlan.NextTime = jobPlan.Expr.Next(now)
 		}
 		if near == nil || jobPlan.NextTime.Before(*near) {
 			near = &jobPlan.NextTime
@@ -96,7 +97,7 @@ func (schedule *Scheduler) TryStartJob (jobPlan *common.JobSchedulePlan) {
 	 var jobExing bool
 	 //如果还在执行，直接返回，说明不用执行了
 	 if jobExecultInfo,jobExing = schedule.jobExecutingTable[jobPlan.Job.Name];jobExing{
-		 fmt.Println("已经在执行了----")
+		 fmt.Println("此任务正在被执行")
          return
 	 }
 
@@ -106,6 +107,7 @@ func (schedule *Scheduler) TryStartJob (jobPlan *common.JobSchedulePlan) {
 
 	 //todo:  此处应该写并发的执行任务
 	 fmt.Println("执行任务",jobPlan.Job.Name,jobExecultInfo.PlanTime,jobExecultInfo.RealTime)
+	 W_Executor.ExecuteJob(jobExecultInfo)
 
 
 
@@ -118,7 +120,7 @@ func (schedule *Scheduler) PushJobResult (jobRes *common.JobExecuteResult) {
 
 
 func (schedule *Scheduler) handleJobResult (jobRes *common.JobExecuteResult) {
-	delete(schedule.jobPlanTable,jobRes.ExecuteInfo.Job.Name)
+	delete(schedule.jobExecutingTable,jobRes.ExecuteInfo.Job.Name)
 	fmt.Println("任务执行完成",jobRes.ExecuteInfo.Job.Name,jobRes.Err,jobRes.Output)
 }
 
