@@ -10,7 +10,7 @@ func main() {
 	worker.InitJobMgr()
 
 	worker.InitLogSink()
-
+    worker.InitRegister()
 
 
 
