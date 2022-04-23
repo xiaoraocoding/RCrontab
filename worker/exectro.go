@@ -2,7 +2,6 @@ package worker
 
 import (
 	"RCrontab/common"
-	"context"
 	"fmt"
 	"os/exec"
 	"time"
@@ -25,13 +24,13 @@ func (executor *Executor) ExecuteJob(job *common.JobExecuteInfo) {
 			 start := time.Now()
 			fmt.Println("这里的上锁失败了",err)
 			result = &common.JobExecuteResult{
-				ExecuteInfo: *job,
+				ExecuteInfo: job,
 				Err: err,
 				StartTime: start,
 			}
 		}else {
 			start := time.Now()
-			cmd := exec.CommandContext(context.TODO(),"/bin/bash","-c",job.Job.Command)
+			cmd := exec.CommandContext(job.CanCtx,"/bin/bash","-c",job.Job.Command)
 			output,err := cmd.CombinedOutput()
 			if err  != nil {
 				fmt.Println("server run command failed",err)
@@ -40,7 +39,7 @@ func (executor *Executor) ExecuteJob(job *common.JobExecuteInfo) {
 			end := time.Now()
 
 			result = &common.JobExecuteResult{
-				ExecuteInfo: *job,
+				ExecuteInfo: job,
 				Output: output,
 				Err: err,
 				StartTime: start,

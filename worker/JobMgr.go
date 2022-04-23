@@ -84,7 +84,7 @@ func (jobMgr *JobMgr) WatchJobs() (err error) {
 					//任务保存
 				case mvccpb.DELETE:
 					//任务删除
-					jobName:= common.ExtrateJonName(string(watchEvent.Kv.Value))
+					jobName:= common.ExtrateJonName(string(watchEvent.Kv.Key))
 					job = &common.Job{Name: jobName}
 					//构建一个删除的Event
 					jobEvent := common.BuildJobEvent(2,job)

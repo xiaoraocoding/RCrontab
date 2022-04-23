@@ -1,6 +1,7 @@
 package common
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
 	"github.com/gorhill/cronexpr"
@@ -23,7 +24,7 @@ type JobEvent struct {
 }
 
 type JobExecuteResult struct {
-	ExecuteInfo JobExecuteInfo //当前的执行状态
+	ExecuteInfo *JobExecuteInfo //当前的执行状态
 	Output []byte              //命令的返回结果
 	Err error                  //错误
 	StartTime time.Time
@@ -53,6 +54,8 @@ type JobExecuteInfo struct {
 	Job *Job
 	PlanTime time.Time  //理论上的调度时间
 	RealTime time.Time  //实际上的调度时间
+	CancelFunc context.CancelFunc //取消任务
+	CanCtx context.Context   //取消任务
 }
 
 func ExtrateJonName(jobKey string) string {
@@ -91,10 +94,14 @@ func BuildJobSchedulePlan(job *Job)*JobSchedulePlan {
 
 
 func BuildJobExecuteInfo(jobSheduleplan *JobSchedulePlan) *JobExecuteInfo {
+
+	ctx,cancelFunc := context.WithCancel(context.TODO())
 	return &JobExecuteInfo{
 		Job: jobSheduleplan.Job,
 		RealTime: time.Now(),
 		PlanTime: jobSheduleplan.NextTime,
+		CanCtx: ctx,
+		CancelFunc: cancelFunc,
 	}
 
 }

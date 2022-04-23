@@ -13,7 +13,7 @@ func InitRouter(r *gin.Engine)  {
 	r.POST("/job/save",HanleJobSave)
 	r.POST("/job/delete",HandleDeleteJob)
 	r.GET("/job/list",HandleList)
-	r.POST("job/kill",HandleKill)
+	r.POST("/job/kill",HandleKill)
 
 }
 

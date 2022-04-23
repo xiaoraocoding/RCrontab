@@ -26,6 +26,13 @@ func (schedule *Scheduler) handleJobEvent(jobEvent *common.JobEvent) {
 	if ok {
 		delete(schedule.jobPlanTable,jobEvent.Job.Name)
 	}
+
+	case 3: //强杀
+	if jobExecute,jobExist := schedule.jobExecutingTable[jobEvent.Job.Name]; jobExist{
+		jobExecute.CancelFunc()  //触发，直接kill
+	}
+
+
 	}
 }
 
@@ -40,6 +47,8 @@ func (schedule *Scheduler) scheduleLoop() {
 			case <- timerA.C :
 		case jobRes:= <- schedule.jobResultChan : //监听任务的结果
 		   schedule.handleJobResult(jobRes)
+
+			
 
 
 		}
