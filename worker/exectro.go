@@ -17,6 +17,7 @@ var W_Executor *Executor
 
 func (executor *Executor) ExecuteJob(job *common.JobExecuteInfo) {
 	go func() {
+		joblock := W_JobMgr.CreateLock(job.Job.Name)  //创建一个锁
 		start := time.Now()
 		cmd := exec.CommandContext(context.TODO(),"/bin/bash","-c",job.Job.Command)
 		output,err := cmd.CombinedOutput()
@@ -35,5 +36,4 @@ func (executor *Executor) ExecuteJob(job *common.JobExecuteInfo) {
 		}
 		W_Scheduler.PushJobResult(result)
 	}()
-
 }
