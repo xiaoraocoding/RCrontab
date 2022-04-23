@@ -9,6 +9,8 @@ func main() {
 	worker.InitSchedule()
 	worker.InitJobMgr()
 
+	worker.InitLogSink()
+
 
 
 
