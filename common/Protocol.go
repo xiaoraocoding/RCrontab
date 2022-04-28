@@ -107,3 +107,9 @@ func BuildJobExecuteInfo(jobSheduleplan *JobSchedulePlan) *JobExecuteInfo {
 }
 
 
+// 提取worker的IP
+func ExtractWorkerIP(regKey string) (string) {
+	return strings.TrimPrefix(regKey, "/cron/workers/")
+}
+
+

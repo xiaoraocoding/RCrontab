@@ -16,6 +16,7 @@ func InitRouter(r *gin.Engine)  {
 	r.GET("/job/list",HandleList)
 	r.POST("/job/kill",HandleKill)
 	r.GET("/job/log",HandleLog)
+	r.GET("/worker/list",HandleWordList)
 
 }
 
@@ -113,6 +114,19 @@ func HandleLog(c *gin.Context) {
 		"errno": 0,
 		"msg" : "success",
 		"data":&logArr,
+	})
+
+}
+
+func HandleWordList(c *gin.Context) {
+	s,err := G_workerMgr.ListWorkers()
+	if err != nil {
+		fmt.Println("listWork",err)
+	}
+	c.JSON(200, gin.H{
+		"errno": 0,
+		"msg" : "success",
+		"data":s,
 	})
 
 }

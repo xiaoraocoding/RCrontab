@@ -20,7 +20,7 @@ var W_JobMgr *JobMgr
 
 func InitJobMgr() {
 	conf := clientv3.Config{
-		Endpoints: []string{"47.96.162.129:2379"},
+		Endpoints: []string{"x"},
 		DialTimeout: 5*time.Second,
 	}
 	client,err := clientv3.New(conf)

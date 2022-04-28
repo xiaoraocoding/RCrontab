@@ -61,7 +61,7 @@ func InitRegister() (err error) {
 
 	// 初始化配置
 	config = clientv3.Config{
-		Endpoints: []string{"47.96.162.129:2379"},
+		Endpoints: []string{"xxx"},
 		DialTimeout: 5*time.Second,
 	}
 
