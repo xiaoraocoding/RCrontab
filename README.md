@@ -27,3 +27,9 @@
 #### 架构图
 
 <img width="729" alt="截屏2022-04-28 下午6 31 11" src="https://user-images.githubusercontent.com/77154552/165735104-8a664986-b8a4-4884-9cec-ee625b675493.png">
+
+
+#### 下阶段
+
+- 提供web前端登录和注册界面
+- 提供对每台worker性能的监控（如worker的内存使用，cpu使用情况等）
